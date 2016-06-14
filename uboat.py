@@ -3,9 +3,9 @@
 """
 Scrape U-boat data and create dataframe
 
-Only works for WWI
-WWII has a different page format
-
+Iterates through www.uboat.net/wwi/ships_hit/
+Each page (#.html) displays a ship
+- Currently only pulls first row/incident
 file = ./Documents/Python/uboat/uboat.py
 output file = ./Documents/Python/uboat/uboat_db.xlsx
 """
@@ -13,7 +13,7 @@ output file = ./Documents/Python/uboat/uboat_db.xlsx
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import logging      # Find which page causes AttributeError
+
 
 BASE_URL = 'http://uboat.net/wwi/ships_hit/'
 
@@ -32,6 +32,7 @@ def get_data(ship):
     top_table = soup.find(class_='table_subtle width550')
     ship_type = top_table.find_all('tr')[1].find_all('td')[1].get_text()
     ship_grt = top_table.find_all('tr')[2].find_all('td')[1].get_text()
+    ship_grt = ship_grt[:-5]
 
     # Pull incident info from info-table
     info_table = soup.find(class_='info-table')
@@ -48,14 +49,22 @@ def get_data(ship):
     else:
         date=uboat=loss_type=position=location=route=cargo=casualties=''
 
+    # Remove \r\n from position
+    position = position.strip('\r\n')
+
     row_data = [ship_name, ship_type, ship_grt, date, uboat, loss_type,
     position, location, route, cargo, casualties] 
 
 
     return row_data
 
-# get_data(2)
+# print(get_data(32))
 
+"""
+The program runs slowly - possible solution:
+Instead of building full pandas database then writing to xlsx,
+Skip dataframe and append each row_data to xlsx.
+"""
 
 # Make database
 def make_database():
