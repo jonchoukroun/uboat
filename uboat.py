@@ -18,7 +18,7 @@ import csv
 BASE_URL = 'http://uboat.net/wwi/ships_hit/'
 
 
-# Use BeautifulSoup to Extract Individual U-Boat data
+# Get data from passed page and return valid rows as list of lists
 def get_data(ship):
     ship_url = BASE_URL + str(ship) + ".html"
     r = requests.get(ship_url)
